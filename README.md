@@ -13,8 +13,14 @@ TailorFetch is a lightweight Node.js library for making HTTP requests with custo
 
 ## Installation
 
+#### NPM
 ```bash
 npm install tailorfetch 
+```
+
+#### CDN
+```text
+<script src="https://unpkg.com/tailorfetch@1.8.0/umd/tailorfetch.min.js"></script>
 ```
 
 ## Features

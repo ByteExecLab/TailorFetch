@@ -1,10 +1,17 @@
 import IRequestOptions from "./IRequestOptions";
 import Request from "./Request";
 import TailorResponse from "./Response";
+import IGlobalConfig from "./IGlobalConfig";
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'CONNECT' | 'HEAD' | 'OPTIONS';
 
 export default class TailorFetch {
+
+    private initialConfig: IRequestOptions | null
+
+    constructor(config: IRequestOptions) {
+        this.initialConfig = config;
+    }
 
     /**
      * Allow concurrent requests

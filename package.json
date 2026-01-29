@@ -1,10 +1,10 @@
 {
   "name": "tailorfetch",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "TailorFetch is a lightweight Node.js library for making HTTP requests with customizable options and response transformations.",
   "main": "lib/index.js",
   "scripts": {
-    "build": "npm run test && npm run clean && npm run build:esm",
+    "build": "npm run test && npm run clean && npm run build:esm && npx rollup -c",
     "test": "mocha",
     "rollup": "rimraf ./umd && npm run build && npx rollup -c",
     "build:esm": "tsc",

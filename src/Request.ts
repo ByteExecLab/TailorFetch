@@ -11,7 +11,7 @@ export default class Request {
 	 *
 	 * @private
 	 */
-	private readonly urlStr: URL;
+	private readonly urlStr: string;
 
 	/**
 	 * HTTP method to use for request
@@ -49,7 +49,7 @@ export default class Request {
 	// private retryCount = 0;
 
 	constructor(urlStr: string, method: string, requestOptions: IRequestOptions, signal?: AbortSignal) {
-		this.urlStr = new URL(urlStr);
+		this.urlStr = urlStr;
 		this.method = method;
 		this.requestOptions = requestOptions;
 		this.abortSignal = signal;
