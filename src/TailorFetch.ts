@@ -5,14 +5,19 @@ import IGlobalConfig from "./IGlobalConfig";
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'CONNECT' | 'HEAD' | 'OPTIONS';
 
+type RequestMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'CONNECT' | 'HEAD' | 'OPTIONS';
+
 export default class TailorFetch {
 
+<<<<<<< HEAD
     private initialConfig: IRequestOptions | null
 
     constructor(config: IRequestOptions) {
         this.initialConfig = config;
     }
 
+=======
+>>>>>>> 07470d7c51d609354684ad7ac90bedfb3a1acfb4
     /**
      * Allow concurrent requests
      *

@@ -2,7 +2,6 @@ import BaseTransform from "./BaseTransform";
 import { BufferSource } from "stream/web";
 import { createClient } from 'redis';
 import BaseRequestInterceptor from "./BaseRequestInterceptor";
-import IGlobalConfig from "./IGlobalConfig";
 
 type redisClient = ReturnType<typeof createClient>;
 
@@ -39,5 +38,4 @@ export default interface IRequestOptions {
     // }
     onError?: (request: IRequestOptions, response: Response | undefined, error: unknown) => void;
     onProgress?: (loaded: number, total: number, progress: number) => void;
-    globalConfig?: IGlobalConfig | null
 }
