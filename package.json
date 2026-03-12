@@ -1,10 +1,6 @@
 {
   "name": "tailorfetch",
-<<<<<<< HEAD
   "version": "1.8.1",
-=======
-  "version": "1.7.0",
->>>>>>> 07470d7c51d609354684ad7ac90bedfb3a1acfb4
   "description": "TailorFetch is a lightweight Node.js library for making HTTP requests with customizable options and response transformations.",
   "main": "lib/index.js",
   "scripts": {
