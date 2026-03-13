@@ -11,7 +11,7 @@ export default class Request {
 	 *
 	 * @private
 	 */
-	private readonly urlStr: URL;
+	private readonly urlStr: string;
 
 	/**
 	 * HTTP method to use for request
@@ -49,7 +49,7 @@ export default class Request {
 	// private retryCount = 0;
 
 	constructor(urlStr: string, method: string, requestOptions: IRequestOptions, signal?: AbortSignal) {
-		this.urlStr = new URL(urlStr);
+		this.urlStr = urlStr;
 		this.method = method;
 		this.requestOptions = requestOptions;
 		this.abortSignal = signal;
@@ -62,9 +62,10 @@ export default class Request {
 	 */
 	async make(): Promise<TailorResponse> {
 		const requestOptionsObject = this.buildRequestOptions();
+		const requestUrl = this.resolveUrl();
 
 		try {
-			this.response = await fetch(this.urlStr, requestOptionsObject);
+			this.response = await fetch(requestUrl, requestOptionsObject);
 
 			if (this.requestOptions.onProgress && this.response.body) {
 				return await this.handleProgress(this.response);
@@ -83,6 +84,30 @@ export default class Request {
 
 			return new TailorResponse(undefined, this.response, this.requestOptions);
 		}
+	}
+
+	/**
+	 * Resolve relative URLs against an explicit baseUrl or the current browser origin.
+	 */
+	private resolveUrl(): string {
+		if (this.isAbsoluteUrl(this.urlStr)) {
+			return this.urlStr;
+		}
+
+		const runtimeOrigin = typeof globalThis.location?.origin === 'string'
+			? globalThis.location.origin
+			: undefined;
+		const baseUrl = this.requestOptions.baseUrl ?? runtimeOrigin;
+
+		if (!baseUrl) {
+			return this.urlStr;
+		}
+
+		return new URL(this.urlStr, baseUrl).toString();
+	}
+
+	private isAbsoluteUrl(url: string): boolean {
+		return /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(url);
 	}
 
 	/**

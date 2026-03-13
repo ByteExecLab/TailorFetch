@@ -7,6 +7,7 @@ type redisClient = ReturnType<typeof createClient>;
 
 export default interface IRequestOptions {
     name?: string,
+    baseUrl?: string,
     headers?: { [key: string]: string };
     queryParams?: { [key: string]: string };
     timeout?: number;

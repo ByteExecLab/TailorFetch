@@ -1,10 +1,47 @@
 import IRequestOptions from "./IRequestOptions";
 import Request from "./Request";
 import TailorResponse from "./Response";
+import IGlobalConfig from "./IGlobalConfig";
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'CONNECT' | 'HEAD' | 'OPTIONS';
 
 export default class TailorFetch {
+    private static globalConfig: IGlobalConfig = {};
+
+    /**
+     * Configure library-wide defaults.
+     */
+    static configure(config: IGlobalConfig): IGlobalConfig {
+        TailorFetch.globalConfig = {
+            ...TailorFetch.globalConfig,
+            ...config,
+            headers: {
+                ...TailorFetch.globalConfig.headers,
+                ...config.headers
+            }
+        };
+
+        return TailorFetch.getConfig();
+    }
+
+    /**
+     * Returns current global configuration.
+     */
+    static getConfig(): IGlobalConfig {
+        return {
+            ...TailorFetch.globalConfig,
+            headers: TailorFetch.globalConfig.headers
+                ? { ...TailorFetch.globalConfig.headers }
+                : undefined
+        };
+    }
+
+    /**
+     * Reset library-wide defaults.
+     */
+    static resetConfig(): void {
+        TailorFetch.globalConfig = {};
+    }
 
     /**
      * Allow concurrent requests
@@ -30,7 +67,7 @@ export default class TailorFetch {
      * @returns {TailorResponse}
      */
     static async make(urlStr: string, method: RequestMethod, options?: IRequestOptions): Promise<TailorResponse> {
-        const request = new Request(urlStr, method, { ...options });
+        const request = new Request(urlStr, method, TailorFetch.mergeOptions(options));
 
         return await request.make();
     }
@@ -44,7 +81,7 @@ export default class TailorFetch {
      * @returns {TailorResponse}
      */
     static async GET(urlStr: string, options?: IRequestOptions): Promise<TailorResponse> {
-        const request = new Request(urlStr, 'GET', { ...options });
+        const request = new Request(urlStr, 'GET', TailorFetch.mergeOptions(options));
 
         return await request.make();
     }
@@ -59,7 +96,7 @@ export default class TailorFetch {
      * @returns {TailorResponse}
      */
     static async POST(urlStr: string, options?: IRequestOptions): Promise<TailorResponse> {
-        const request = new Request(urlStr, 'POST', { ...options });
+        const request = new Request(urlStr, 'POST', TailorFetch.mergeOptions(options));
 
         return await request.make();
     }
@@ -73,7 +110,7 @@ export default class TailorFetch {
      * @returns {TailorResponse}
      */
     static async PUT(urlStr: string, options?: IRequestOptions): Promise<TailorResponse> {
-        const request = new Request(urlStr, 'PUT', { ...options });
+        const request = new Request(urlStr, 'PUT', TailorFetch.mergeOptions(options));
 
         return await request.make();
     }
@@ -87,7 +124,7 @@ export default class TailorFetch {
      * @returns {TailorResponse}
      */
     static async PATCH(urlStr: string, options?: IRequestOptions): Promise<TailorResponse> {
-        const request = new Request(urlStr, 'PATCH', { ...options });
+        const request = new Request(urlStr, 'PATCH', TailorFetch.mergeOptions(options));
 
         return await request.make();
     }
@@ -101,7 +138,7 @@ export default class TailorFetch {
      * @returns {TailorResponse}
      */
     static async DELETE(urlStr: string, options?: IRequestOptions): Promise<TailorResponse> {
-        const request = new Request(urlStr, 'DELETE', { ...options });
+        const request = new Request(urlStr, 'DELETE', TailorFetch.mergeOptions(options));
 
         return await request.make();
     }
@@ -114,7 +151,7 @@ export default class TailorFetch {
      * @returns {TailorResponse} 
      */
     static async HEAD(urlStr: string, options?: IRequestOptions): Promise<TailorResponse> {
-        const request = new Request(urlStr, 'HEAD', { ...options });
+        const request = new Request(urlStr, 'HEAD', TailorFetch.mergeOptions(options));
 
         return request.make();
     }
@@ -127,8 +164,31 @@ export default class TailorFetch {
      * @returns {TailorResponse}
      */
     static async OPTIONS(urlStr: string, options?: IRequestOptions): Promise<TailorResponse> {
-        const request = new Request(urlStr, 'OPTIONS', { ...options });
+        const request = new Request(urlStr, 'OPTIONS', TailorFetch.mergeOptions(options));
 
         return await request.make();
+    }
+
+    private static mergeOptions(options?: IRequestOptions): IRequestOptions {
+        const globalConfig = TailorFetch.getConfig();
+        const envBaseUrl = TailorFetch.getEnvironmentBaseUrl();
+
+        return {
+            ...globalConfig,
+            ...options,
+            baseUrl: options?.baseUrl ?? globalConfig.baseUrl ?? globalConfig.baseURL ?? envBaseUrl,
+            headers: {
+                ...globalConfig.headers,
+                ...options?.headers
+            }
+        };
+    }
+
+    private static getEnvironmentBaseUrl(): string | undefined {
+        if (typeof process === 'undefined' || !process.env) {
+            return undefined;
+        }
+
+        return process.env.TAILORFETCH_BASE_URL ?? process.env.TAILOR_FETCH_BASE_URL;
     }
 }

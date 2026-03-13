@@ -13,8 +13,14 @@ TailorFetch is a lightweight Node.js library for making HTTP requests with custo
 
 ## Installation
 
+#### NPM
 ```bash
 npm install tailorfetch 
+```
+
+#### CDN
+```text
+<script src="https://unpkg.com/tailorfetch@1.8.0/umd/tailorfetch.min.js"></script>
 ```
 
 ## Features
@@ -32,6 +38,50 @@ import TailorFetch from 'tailorfetch';
 
 await TailorFetch.GET('https://dummyjson.com/products');
 ```
+
+### Relative URLs With Per-Request `baseUrl`
+```typescript
+import TailorFetch from 'tailorfetch';
+
+await TailorFetch.GET('/products', {
+   baseUrl: 'https://dummyjson.com'
+});
+```
+
+### Global `baseUrl` Configuration
+```typescript
+import TailorFetch from 'tailorfetch';
+
+TailorFetch.configure({
+   baseUrl: 'https://dummyjson.com'
+});
+
+await TailorFetch.GET('/products');
+await TailorFetch.POST('/products/add', {
+   body: JSON.stringify({ title: 'BMW Pencil' })
+});
+```
+
+### Environment-Based `baseUrl` Configuration
+In Node.js, TailorFetch will also read `TAILORFETCH_BASE_URL` or `TAILOR_FETCH_BASE_URL`
+when `baseUrl` is not supplied in the request or global config.
+
+```bash
+TAILORFETCH_BASE_URL=https://dummyjson.com
+```
+
+```typescript
+import TailorFetch from 'tailorfetch';
+
+await TailorFetch.GET('/products');
+```
+
+### Base URL Precedence
+TailorFetch resolves relative URLs in this order:
+- Request `baseUrl`
+- `TailorFetch.configure({ baseUrl })`
+- `TAILORFETCH_BASE_URL` or `TAILOR_FETCH_BASE_URL` in Node.js
+- `window.location.origin` in the browser
 
 ### Making POST Request
 ```typescript
@@ -59,6 +109,7 @@ await TailorFetch.POST(url, options);
 
 ## Options:
  - `headers`               -  An object containing request headers.
+ - `baseUrl`               -  Base URL used to resolve relative request paths like `/api/users`.
  - `queryParams`           -  An object containing query parameters for the URL.
  - `timeout`               -  The request timeout in milliseconds.
  - `json`                  -  Set to `true` to parse the response as JSON.
@@ -75,6 +126,11 @@ await TailorFetch.POST(url, options);
  - `retry`:
    - `maxRetries`          -  Maximum number of times to attempt to make an HTTP request
    - `retryDelay`          -  Number of milliseconds to wait between attempts
+
+## Global Configuration
+- `TailorFetch.configure(config)` - Set global defaults for future requests.
+- `TailorFetch.getConfig()` - Read current global defaults.
+- `TailorFetch.resetConfig()` - Clear global defaults.
 
 ## Concurrent Requests
 TailorFetch supports making concurrent HTTP requests out of the box.
